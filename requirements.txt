@@ -1,0 +1,6 @@
+dj_rest_auth
+django-cors-headers
+django-rest-framework
+djangorestframework-simplejwt
+celery
+django-allauth
