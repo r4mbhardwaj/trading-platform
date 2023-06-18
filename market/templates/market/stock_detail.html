@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+
+{% block body %}
 <h1>{{ stock.name }}</h1>
 <p>Symbol: {{ stock.ticker }}</p>
 <p>Description: {{ stock.description }}</p>
@@ -6,12 +9,22 @@
     <canvas id="stockChart"></canvas>
 </div>
 <div>
-    <label for="refreshInterval">Refresh Interval (seconds):</label>
-    <input type="number" id="refreshInterval" min="1" value="5">
+    <label for="timePeriod">Time Period:</label>
+    <input type="number" id="timePeriod" min="1" value="60">
+    <select id="unit">
+        <option value="second">Seconds</option>
+        <option value="minute">Minutes</option>
+        <option value="hour">Hours</option>
+        <option value="day">Days</option>
+        <option value="week">Weeks</option>
+        <option value="month">Months</option>
+        <option value="year">Years</option>
+    </select>
     <button id="updateButton">Update Chart</button>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
     .chart-container {
         width: 100%;
@@ -19,20 +32,37 @@
         max-height: 400px;
     }
 </style>
+
 <script>
+    // Define custom theme
+    Chart.defaults.color = '#ffffff';
+    Chart.defaults.font.family = 'Arial, sans-serif';
+    Chart.defaults.font.weight = 'bold';
+    Chart.defaults.font.size = 12;
+    
+    Chart.defaults.plugins.title.display = true;
+    Chart.defaults.plugins.title.font.size = 16;
+    
+    Chart.defaults.plugins.legend.display = true;
+    Chart.defaults.plugins.legend.position = 'bottom';
+    Chart.defaults.plugins.legend.labels.color = '#cccccc';
+
     $(document).ready(function() {
-        var ticker = "{{ stock.ticker }}";  // Retrieve the stock ticker from the template
+        var ticker = "{{ stock.ticker }}";
         var ctx = document.getElementById('stockChart').getContext('2d');
         var stockChart;
-        var refreshSeconds = 5;  // Initial refresh interval in seconds
 
-        function updateChart(seconds) {
+        function updateChart() {
+            var timePeriod = parseInt($("#timePeriod").val());
+            var unit = $("#unit").val();
+
             $.ajax({
                 url: '/market/api/v1/get_prices/',
                 type: 'POST',
                 data: {
                     ticker: ticker,
-                    seconds: seconds
+                    time_period: timePeriod,
+                    unit: unit
                 },
                 dataType: 'json',
                 success: function(data) {
@@ -51,34 +81,56 @@
                     stockChart = new Chart(ctx, {
                         type: 'line',
                         data: {
-                            labels: labels,  // Reverse the order of labels to display from oldest to newest
+                            labels: labels,
                             datasets: [{
                                 label: 'Stock Price',
-                                data: priceData,  // Reverse the order of data to match the reversed labels
-                                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                                data: priceData,
+                                backgroundColor: 'rgba(0, 123, 255, 0.1)',
                                 borderColor: 'rgba(0, 123, 255, 1)',
-                                borderWidth: 1
+                                borderWidth: 2,
+                                pointBackgroundColor: 'rgba(0, 123, 255, 1)',
+                                pointBorderColor: '#ffffff',
+                                pointBorderWidth: 1,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
                             }]
                         },
                         options: {
                             responsive: true,
                             maintainAspectRatio: false,
                             animation: {
-                                duration: 0  // Disable animation for chart rendering
+                                duration: 0
                             },
                             scales: {
                                 x: {
-                                    display: true,
+                                    indexAxis: 'x',
+                                    grid: {
+                                        color: '#cccccc'
+                                    },
+                                    ticks: {
+                                        color: '#cccccc',
+                                        maxRotation: 0,
+                                        autoSkip: true,
+                                        maxTicksLimit: 10
+                                    },
                                     title: {
                                         display: true,
-                                        text: 'Date'
+                                        text: 'Time',
+                                        color: '#ffffff'
                                     }
                                 },
                                 y: {
-                                    display: true,
+                                    grid: {
+                                        color: '#cccccc'
+                                    },
+                                    ticks: {
+                                        beginAtZero: false,
+                                        color: '#cccccc'
+                                    },
                                     title: {
                                         display: true,
-                                        text: 'Price'
+                                        text: 'Price',
+                                        color: '#ffffff'
                                     }
                                 }
                             }
@@ -86,23 +138,23 @@
                     });
                 },
                 error: function() {
-                    console.log('Error occurred while fetching prices.');
+                    console.log('Failed to fetch price data.');
                 }
             });
         }
 
-        // Initial chart update (last 5 seconds)
-        updateChart(refreshSeconds);
+        // Initial chart update
+        updateChart();
 
-        // Update the chart on button click
-        $('#updateButton').on('click', function() {
-            refreshSeconds = parseInt($('#refreshInterval').val());
-            updateChart(refreshSeconds);
+        // Attach event listener to the 'Update Chart' button
+        $("#updateButton").click(function() {
+            updateChart();
         });
 
-        // Update the chart periodically
         setInterval(function() {
-            updateChart(refreshSeconds);
+            updateChart();
         }, 1000);
     });
 </script>
+
+{% endblock %}

@@ -16,4 +16,28 @@ app.conf.beat_schedule = {
         'task': 'market.tasks.generate_price',
         'schedule': 1.0,  # Run every second
     },
+    'calculate-average-price-every-minute': {
+        'task': 'market.tasks.calculate_average_price_minutes',
+        'schedule': 60.0,  # Run every minute
+    },
+    'calculate-average-price-every-hour': {
+        'task': 'market.tasks.calculate_average_price_hours',
+        'schedule': crontab(minute=0),  # Run every hour at minute 0
+    },
+    'calculate-average-price-every-day': {
+        'task': 'market.tasks.calculate_average_price_days',
+        'schedule': crontab(minute=0, hour=0),  # Run every day at 00:00
+    },
+    'calculate-average-price-every-week': {
+        'task': 'market.tasks.calculate_average_price_weeks',
+        'schedule': crontab(minute=0, hour=0, day_of_week=1),  # Run every Monday at 00:00
+    },
+    'calculate-average-price-every-month': {
+        'task': 'market.tasks.calculate_average_price_months',
+        'schedule': crontab(minute=0, hour=0, day_of_month=1),  # Run on the 1st of every month at 00:00
+    },
+    'calculate-average-price-every-year': {
+        'task': 'market.tasks.calculate_average_price_years',
+        'schedule': crontab(minute=0, hour=0, day_of_month=1, month_of_year=1),  # Run on January 1st at 00:00
+    },
 }

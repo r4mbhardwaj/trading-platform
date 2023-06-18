@@ -13,19 +13,36 @@ from django.utils import timezone
 def get_prices(request):
     if request.method == 'POST':
         ticker = request.POST.get('ticker', '')
-        seconds = int(request.POST.get('seconds', 0))
+        time_period = int(request.POST.get('time_period', 0))
+        unit = request.POST.get('unit', 'second')
+
         end_time = timezone.now()
-        start_time = end_time - timedelta(seconds=seconds)
-        
+        if unit == 'second':
+            start_time = end_time - timedelta(seconds=time_period)
+        elif unit == 'minute':
+            start_time = end_time - timedelta(minutes=time_period)
+        elif unit == 'hour':
+            start_time = end_time - timedelta(hours=time_period)
+        elif unit == 'day':
+            start_time = end_time - timedelta(days=time_period)
+        elif unit == 'week':
+            start_time = end_time - timedelta(weeks=time_period)
+        elif unit == 'month':
+            start_time = end_time - timedelta(days=time_period*30)  # Approximate 30 days for a month
+        elif unit == 'year':
+            start_time = end_time - timedelta(days=time_period*365)  # Approximate 365 days for a year
+        else:
+            return JsonResponse({'error': 'Invalid unit'}, status=400)
+
         try:
             stock = Stock.objects.get(ticker=ticker)
         except Stock.DoesNotExist:
             return JsonResponse({'error': 'Stock not found'}, status=404)
-        
-        prices = Price.objects.filter(stock=stock, date__range=(start_time, end_time)).values('date', 'price')
+
+        prices = Price.objects.filter(stock=stock, unit=unit, date__range=(start_time, end_time)).values('date', 'price')
         data = list(prices)
-        
         return JsonResponse(data, safe=False)
+    
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
 
