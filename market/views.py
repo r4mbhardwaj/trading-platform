@@ -1,16 +1,12 @@
 from django.shortcuts import render
 from django.views import generic, View
 from .models import Stock, Price
-from .forms import SearchForm
 
 
 class Search(View):
     def get(self, request):
-        form = SearchForm()
 
-        return render(request, 'market/search.html', {
-            "form": form
-        })
+        return render(request, 'market/search.html')
 
 
 class StockListView(generic.ListView):

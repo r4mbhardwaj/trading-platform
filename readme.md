@@ -1,79 +1,55 @@
 # Trading Platform 📈
 
-The **Trading Platform** is an innovative Django-based web application that brings trading view functionality to your fingertips! 💼💹 Dive into the exciting world of trading, analyze market data, and make informed decisions with ease. This readme will guide you through the installation and running of the application. Let's get started! 🚀
+The Trading Platform is an innovative Django-based web application that brings trading view functionality to your fingertips! 💼💹 Dive into the exciting world of trading, analyze market data, and make informed decisions with ease. This readme will guide you through the installation and running of the application using Docker. Let's get started! 🚀
 
 ## Requirements 📋
 
-To embark on this trading adventure, make sure you have the following requirements in place:
+To embark on this trading adventure, you will need the following requirements:
 
-- Python 🐍
-- Django 🌐
-- Celery 🌟
-- RabbitMQ 🐇
+- Docker 🐳
 
-Before proceeding, ensure that you have these prerequisites installed on your system.
+Make sure you have Docker installed on your system before proceeding.
 
 ## Installation ⚙️
 
-To set up the Trading Platform, follow these simple steps:
+To set up the Trading Platform using Docker, follow these simple steps:
 
-1. Install RabbitMQ 🐇 based on your operating system. It will play a vital role in the functioning of our application.
+1. Clone this repository to your local machine.
 
-2. Install the Python dependencies by gracefully running the following command: 📥
+2. Open a terminal and navigate to the project directory.
+
+3. Build the Docker image by running the following command:
+
    ```
-   pip3 install -r requirements.txt
+   docker build -t trading_platform .
    ```
+
+   This will build the Docker image based on the provided Dockerfile.
 
 ## Running the Application 🏃‍♀️
 
-To ignite the Trading Platform's engine, follow these illuminating steps:
+To start the Trading Platform application using Docker, follow these steps:
 
-### Setting up the Database 💾
+1. Run the Docker container with the following command:
 
-Prepare the database for action by running this command: 🛠️
+   ```
+   docker run -p 8000:8000 trading_platform
+   ```
 
-```
-python manage.py migrate
-```
+   This will start the Trading Platform application inside a Docker container. The `-p 8000:8000` flag maps port 8000 of the container to port 8000 of the host machine.
 
-### Starting the Project 🚀
+2. Open your web browser and navigate to [http://localhost:8000/](http://localhost:8000/) to access the Trading Platform.
 
-Launch the project and let it soar by executing this command: 🚀
+3. Start exploring the exciting world of trading, analyze market data, and make informed decisions!
 
-```
-python3 manage.py runserver
-```
+4. To stop the Docker container, go back to the terminal and press `Ctrl + C`. This will gracefully stop the container.
 
-### Running Celery Processes ⚙️
+That's it! You now have the Trading Platform up and running using Docker. Enjoy your trading journey! 📈🚀
 
-The Trading Platform powers up with the help of mighty Celery! ⚡ Depending on your operating system, follow the instructions below to unleash the magic of Celery!
+## Docker Configuration 🐳
 
-**For Linux/MacOS:** 🐧🍎
-Execute this enchanting command to synchronize the realms of Celery's worker and beat processes: 🌟
+If you need to customize any Docker settings, you can modify the Dockerfile located in the root directory of the project. Feel free to update the Dockerfile to meet the specific requirements of your environment or application.
 
-```
-celery -A trading_platform worker --loglevel=info --beat
-```
+## Troubleshooting 🛠️
 
-**For Windows:** 🪟
-Invoke two separate command prompt windows, each dedicated to a heroic Celery process. Kindly enter the following commands:
-
-1️⃣ Start the worker:
-
-```
-celery -A trading_platform worker --loglevel=info
-```
-
-2️⃣ Start the beat:
-
-```
-celery -A trading_platform beat --loglevel=info
-```
-
-Rise above the horizon of possibilities! ✨✨ As the Trading Platform and Celery processes thrive, open your web browser and navigate to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to bask in the marvels of the Trading Platform.
-
-Remember to keep the RabbitMQ server live before commencing this glorious journey. It will ensure seamless task processing and job scheduling.
-
-Should you require further assistance or seek enlightenment, dive into the extensive documentation or reach out to our dedicated support team. We're here to elevate your trading experience! 🚀💼
-
-Happy Trading! 📈📉 Feel the thrill of the market and make your mark! 💪💰
+If you encounter any issues or have questions while setting up or running the Trading Platform with Docker, please don't hesitate to reach out for support. We're here to help you!
