@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import StockList, StockDetail, PriceList, PriceDetail, get_prices
+from .views import StockList, StockDetail, PriceList, PriceDetail, get_prices, AutoCompleteAPI
 
 
 urlpatterns = [
@@ -8,5 +8,6 @@ urlpatterns = [
     path('stocks/<int:pk>/', StockDetail.as_view()),
     path('stocks/<int:pk>/prices/', PriceList.as_view()),
     path('stocks/<int:pk>/prices/<int:price_pk>/', PriceDetail.as_view()),
-    path('get_prices/', get_prices), 
+    path('get_prices/', get_prices),
+    path('autocomplete/', AutoCompleteAPI.as_view()),
 ]

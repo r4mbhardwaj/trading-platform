@@ -1,14 +1,7 @@
 from django.shortcuts import render
 from django.views import generic, View
-from dal import autocomplete
 from .models import Stock, Price
 from .forms import SearchForm
-
-
-class StockAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        queryset = Stock.objects.all()
-        return queryset
 
 
 class Search(View):

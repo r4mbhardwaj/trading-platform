@@ -1,14 +1,87 @@
 {% extends "base.html" %}
 {% block body %}
-
-<div class="hero min-h-screen bg-base-200">
+  <div class="hero bg-base-200 bg-opacity-10">
     <div class="hero-content text-center">
       <div class="max-w-md">
         <h1 class="text-5xl font-bold">Search Stockz</h1>
-        <p class="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p>
-        <a class="btn btn-primary" href="{% url 'market:stock_list' %}">Browse</a>
+        <input id="search-input"
+               type="text"
+               placeholder="Search"
+               class="input input-bordered">
+        <a class="btn btn-primary" href="{% url 'market:stock_list' %}">Browse All</a>
       </div>
     </div>
   </div>
+  <div id="autocomplete-results" class="overflow-x-auto">
+    <table class="table table-md">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Symbol</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Change</th>
+          <th>Change %</th>
+          <th>Volume</th>
+          <th>Market Cap</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  {% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script>
+      $(document).ready(function() {
+        var autocompleteResults = $("#autocomplete-results tbody");
 
+        $("#search-input").autocomplete({
+          source: function(request, response) {
+            $.ajax({
+              url: "http://127.0.0.1:8000/market/api/v1/autocomplete/",
+              dataType: "json",
+              data: { query: request.term },
+              success: function(data) {
+                // Clear previous results
+                autocompleteResults.empty();
+
+                // Render the new results in the table
+                data.forEach(function(item) {
+                  var row = $("<tr>");
+                  row.append($("<td>").text(item.label));
+                  row.append($("<td>").html(
+                    `<a href="/market/stocks/${item.ticker}" data-stock-id="${item.ticker}">${item.ticker}</a>`
+                    ));
+                  row.append($("<td>").html(item.name));
+                  row.appendTo(autocompleteResults);
+                });
+
+                // Show the results
+                autocompleteResults.parents("#autocomplete-results").show();
+              }
+            });
+          },
+          minLength: 2, // Minimum characters required to trigger autocomplete
+          response: function(event, ui) {
+            // Hide the results if there are no suggestions
+            if (ui.content.length === 0) {
+              autocompleteResults.parents("#autocomplete-results").hide();
+            }
+          },
+          open: function() {
+            // Show the results
+            autocompleteResults.parents("#autocomplete-results").show();
+          },
+          select: function(event, ui) {
+            // Redirect to the detail page for the selected stock
+            window.location.href = "/market/stock/" + ui.item.value;
+          }
+        }).autocomplete("instance")._renderItem = function(ul, item) {
+          return $("<li>").append("<div>").text(item.label).appendTo(ul);
+        };
+      });
+    </script>
+  {% endblock %}
 {% endblock body %}

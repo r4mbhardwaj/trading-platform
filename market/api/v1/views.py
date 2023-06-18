@@ -9,6 +9,11 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 
+# import Q
+from django.db.models import Q
+from rest_framework.views import APIView
+
+
 @csrf_exempt
 def get_prices(request):
     if request.method == 'POST':
@@ -28,9 +33,11 @@ def get_prices(request):
         elif unit == 'week':
             start_time = end_time - timedelta(weeks=time_period)
         elif unit == 'month':
-            start_time = end_time - timedelta(days=time_period*30)  # Approximate 30 days for a month
+            # Approximate 30 days for a month
+            start_time = end_time - timedelta(days=time_period*30)
         elif unit == 'year':
-            start_time = end_time - timedelta(days=time_period*365)  # Approximate 365 days for a year
+            # Approximate 365 days for a year
+            start_time = end_time - timedelta(days=time_period*365)
         else:
             return JsonResponse({'error': 'Invalid unit'}, status=400)
 
@@ -39,13 +46,25 @@ def get_prices(request):
         except Stock.DoesNotExist:
             return JsonResponse({'error': 'Stock not found'}, status=404)
 
-        prices = Price.objects.filter(stock=stock, unit=unit, date__range=(start_time, end_time)).values('date', 'price')
+        prices = Price.objects.filter(stock=stock, unit=unit, date__range=(
+            start_time, end_time)).values('date', 'price')
         data = list(prices)
         return JsonResponse(data, safe=False)
-    
+
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
 
+
+class AutoCompleteAPI(APIView):
+    def get(self, request, format=None):
+        query = self.request.GET.get('query', '')
+        if query:
+            stocks = Stock.objects.filter(
+                Q(ticker__icontains=query) | Q(name__icontains=query))
+        else:
+            stocks = Stock.objects.all()
+        data = list(stocks.values('ticker', 'name'))
+        return JsonResponse(data, safe=False)
 
 
 class StockList(generics.ListAPIView):
@@ -53,9 +72,11 @@ class StockList(generics.ListAPIView):
     serializer_class = StockSerializer
     paginate_by = 10
 
+
 class StockDetail(generics.RetrieveAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
+
 
 class PriceList(generics.ListAPIView):
     # get price of a stock
@@ -65,7 +86,8 @@ class PriceList(generics.ListAPIView):
     def get_queryset(self):
         stock_id = self.kwargs['pk']
         return Price.objects.filter(stock_id=stock_id)
-    
+
+
 class PriceDetail(generics.RetrieveAPIView):
     # get price of a stock
     queryset = Price.objects.all()
