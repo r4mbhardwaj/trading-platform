@@ -4,6 +4,33 @@ from market.models import Stock, Price
 
 from market.serializers import StockSerializer, PriceSerializer
 
+from datetime import timedelta
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+
+@csrf_exempt
+def get_prices(request):
+    if request.method == 'POST':
+        ticker = request.POST.get('ticker', '')
+        seconds = int(request.POST.get('seconds', 0))
+        end_time = timezone.now()
+        start_time = end_time - timedelta(seconds=seconds)
+        
+        try:
+            stock = Stock.objects.get(ticker=ticker)
+        except Stock.DoesNotExist:
+            return JsonResponse({'error': 'Stock not found'}, status=404)
+        
+        prices = Price.objects.filter(stock=stock, date__range=(start_time, end_time)).values('date', 'price')
+        data = list(prices)
+        
+        return JsonResponse(data, safe=False)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+
 class StockList(generics.ListAPIView):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
