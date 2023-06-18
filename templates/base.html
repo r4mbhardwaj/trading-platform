@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="business">
+<html lang="en" data-theme="haloween">
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8" />
@@ -8,12 +8,16 @@
           rel="stylesheet"
           type="text/css" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <!-- google icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet" />
     <title>
       {% block head_title %}Stock Market!{% endblock %}
     </title>
     {% block extra_head %}{% endblock %}
   </head>
   <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     {% include "components/navbar.html" %}
     {% for message in messages %}
       <div class="alert alert-{{ message.level_tag }}">

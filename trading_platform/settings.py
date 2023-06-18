@@ -68,6 +68,8 @@ CELERY_APP = 'trading_platform.celery:app'
 
 CELERY_TASK_ALWAYS_EAGER = False
 
+# login redirect
+LOGIN_REDIRECT_URL = '/'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

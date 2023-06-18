@@ -1,0 +1,128 @@
+<script>
+
+    function addToWishlist(ticker) {
+        // add to wishlist
+        $.ajax({
+            // authenty => v1 => wishlist-create
+            url: '{% url "authenty:v1:wishlist-create" %}',
+            method: 'POST',
+            data: {
+                stock: ticker,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (data) {
+                // update data-wishlisted attribute
+                document.querySelector('[data-stock-ticker-wishlist="' + ticker + '"]').setAttribute('data-wishlisted', 'true');
+                console.log(data);
+                // add class btn-accent to the button
+                document.querySelector('[data-stock-ticker-wishlist="' + ticker + '"]').classList.add('btn-accent');
+            },
+            error: function (data) {
+                console.log(data);
+                // add class btn-error to the button
+                document.querySelector('[data-stock-ticker-wishlist="' + ticker + '"]').classList.add('btn-error');
+            }
+        });
+    }
+
+    function removeFromWishlist(ticker) {
+        // remove from wishlist
+        $.ajax({
+            // authenty => v1 => wishlist-delete
+            url: '{% url "authenty:v1:wishlist-delete" %}',
+            method: 'post',
+            data: {
+                stock: ticker,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function (data) {
+                // update data-wishlisted attribute
+                $('[data-stock-ticker-wishlist="' + ticker + '"]').attr('data-wishlisted', 'false');
+                console.log(data);
+                // remove class btn-accent and btn-error from the button
+                $('[data-stock-ticker-wishlist="' + ticker + '"]').removeClass('btn-accent');
+                $('[data-stock-ticker-wishlist="' + ticker + '"]').removeClass('btn-error');
+            },
+            error: function (data) {
+                console.log(data);
+                // add class btn-error to the button
+                $('[data-stock-ticker-wishlist="' + ticker + '"]').addClass('btn-error');
+            }
+        });
+    }
+
+    var wishlisted_stocks = [];
+
+
+    // fetch the wishlist
+    $.ajax({
+        // authenty => v1 => wishlist-list
+        url: '{% url "authenty:v1:wishlist-list" %}',
+        method: 'get',
+        success: function (data) {
+            // update data-wishlisted attribute
+            data.forEach(function (item) {
+                $('[data-stock-ticker-wishlist="' + item.stock + '"]').attr('data-wishlisted', 'true');
+            });
+            // console.log(data);
+            // add to wishlisted_stocks
+            for (var i = 0; i < data.length; i++) {
+                wishlisted_stocks.push(data[i].stock);
+            }
+        },
+    });
+
+    console.log(wishlisted_stocks);
+
+
+    // // for wishlisted stocks, make data-wishlisted attribute true
+    // for (var i = 0; i < wishlisted_stocks.length; i++) {
+    //     // make accent color for the button
+    //     $('[data-stock-ticker-wishlist="' + wishlisted_stocks[i] + '"]').addClass('btn-accent');
+    //     // make data-wishlisted attribute true
+    //     $('[data-stock-ticker-wishlist="' + wishlisted_stocks[i] + '"]').attr('data-wishlisted', 'true');
+
+    //     // see if btn-accent is added
+    //     console.log($('[data-stock-ticker-wishlist="' + wishlisted_stocks[i] + '"]').hasClass('btn-accent'));
+    // }
+
+
+
+    // get all items with data-stock-ticker-wishlist attribute
+    var wishlistItems = document.querySelectorAll('[data-stock-ticker-wishlist]');
+
+    // if any clicked, console log the data-stock-ticker-wishlist attribute
+    wishlistItems.forEach(function (item) {
+        item.addEventListener('click', function () {
+
+            // convert data-wishlisted to boolean
+            var wishlisted = item.getAttribute('data-wishlisted') === 'true';
+            var ticker = item.getAttribute('data-stock-ticker-wishlist');
+
+            // if wishlisted, remove from wishlist
+            if (wishlisted) {
+                // remove from wishlist
+                removeFromWishlist(ticker);
+            } else {
+                // add to wishlist
+                addToWishlist(ticker);
+            }
+        });
+    });
+</script>
+
+
+<script>
+$(document).ready(function() {
+    wishlisted_stocks.forEach(function (item) {
+        console.log(item);
+        // make accent color for the button
+        $('[data-stock-ticker-wishlist="' + item + '"]').addClass('btn-accent');
+        // make data-wishlisted attribute true
+        $('[data-stock-ticker-wishlist="' + item + '"]').attr('data-wishlisted', 'true');
+    });
+});
+
+
+
+</script>

@@ -1,10 +1,37 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<h1>{{ stock.name }}</h1>
-<p>Symbol: {{ stock.ticker }}</p>
-<p>Description: {{ stock.description }}</p>
-<h2>Price History</h2>
+
+
+
+
+
+{% with stock.get_yesterday_price as yesterday_price %}
+<div class="stats shadow">
+  
+    <div class="stat place-items-center">
+      <div class="stat-title">{{ stock.name }}</div>
+      <div class="stat-value">{{ stock.ticker }}</div>
+      <div class="stat-desc">Starting Price: {{ stock.starting_price }}</div>
+    </div>
+    
+    <div class="stat place-items-center">
+      <div class="stat-title">Current Price</div>
+      <div class="stat-value text-secondary"><span id="current_price"></span></div>
+      <div class="stat-desc text-secondary"><span id="profit_percent"></span></div>
+    </div>
+    
+    <div class="stat place-items-center">
+      <div class="stat-title">Yesterday's Price</div>
+      <div class="stat-value">{{ yesterday_price }}</div>
+      <div class="stat-desc">↘︎ 90 (14%)</div>
+    </div>
+    
+  </div>
+
+  <article class="prose">
+    <h2>Price History</h2>
+</article>
 <div class="chart-container">
     <canvas id="stockChart"></canvas>
 </div>
@@ -22,7 +49,6 @@
     </select>
     <button id="updateButton">Update Chart</button>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -34,6 +60,9 @@
 </style>
 
 <script>
+
+    var yesterday_price = {% if yesterday_price %}{{ yesterday_price }}{% elif stock.starting_price %}{{ stock.starting_price }}{% else %}null{% endif %};
+
     // Define custom theme
     Chart.defaults.color = '#ffffff';
     Chart.defaults.font.family = 'Arial, sans-serif';
@@ -66,6 +95,28 @@
                 },
                 dataType: 'json',
                 success: function(data) {
+
+
+                    // update profit percent and current price
+                    var current_price = data[data.length - 1].price;
+                    // upto 2 decimal places
+                    current_price = current_price.toFixed(2);
+                    var profit_percent = (current_price - yesterday_price) / yesterday_price * 100;
+                    // see if yesterday_price was not null so its not infinity
+                    if (yesterday_price) {
+                        if (profit_percent > 0) {
+                            $("#profit_percent").css('color', 'green');
+                        } else if (profit_percent < 0) {
+                            $("#profit_percent").css('color', 'red');
+                        } else {
+                            $("#profit_percent").css('color', 'white');
+                        }
+                    }
+
+                    $("#current_price").text(current_price);
+                    $("#profit_percent").text(profit_percent.toFixed(2) + '%');
+
+
                     var labels = data.map(function(item) {
                         return item.date;
                     });
@@ -156,5 +207,6 @@
         }, 1000);
     });
 </script>
+{% endwith %}
 
 {% endblock %}

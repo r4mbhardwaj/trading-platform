@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
+<article class="prose">
+    <h1>Wishlist Stocks</h1>
+</article>
 <div class="overflow-x-auto">
   <table class="table table-md">
     <thead>
@@ -15,8 +18,10 @@
       </tr>
     </thead>
     <tbody>
-      {% for stock in stock_list %}
-      {% include 'market/components/stock_object.html' %}
+      {% for wishlist_item in user.wishlist.all %}
+        {% with stock=wishlist_item.stock %}
+          {% include 'market/components/stock_object.html' %}
+        {% endwith %}
       {% endfor %}
     </tbody>
   </table>
@@ -103,6 +108,5 @@
   });
 
 </script>
-
 {% include 'components/wishlist_ajax.html' %}
 {% endblock body %}

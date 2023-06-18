@@ -1,5 +1,11 @@
 <tr>
   <th>{{ forloop.counter }}</th>
-  <td><a href="{{ stock.get_absolute_url }}">{{ stock.ticker }}</a></td>
+  <td><a href="{{ stock.get_absolute_url }}" data-stock-id="{{ stock.ticker }}">{{ stock.ticker }}</a></td>
   <td>{{ stock.name }}</td>
+  <td><span id="{{ stock.ticker }}___current_price" data-starting-price="{{ stock.starting_price }}" data-yesterday-price="{{ stock.get_yesterday_price }}">---</span></td>
+  <td><span id="{{ stock.ticker }}___change">---</span></td>
+  <td><span id="{{ stock.ticker }}___change_percent">---</span></td>
+  <td>
+    <button {% if user.is_authenticated %}class="btn btn-circle" data-stock-ticker-wishlist="{{ stock.ticker }}" data-wishlisted={% if stock in wishlist_items %}true{% else %}false{% endif %} {% else %}class="btn btn-circle btn-disabled"{% endif %}><i class="material-icons">loyalty</i></button>
+  </td>
 </tr>

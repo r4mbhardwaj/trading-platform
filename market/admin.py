@@ -9,4 +9,10 @@ class StockAdmin(admin.ModelAdmin):
     search_fields = ("ticker", "name")
 
 admin.site.register(Stock, StockAdmin)
-admin.site.register(Price)
+
+class PriceAdmin(admin.ModelAdmin):
+    list_display = ("stock", "price", "unit", "date")
+    search_fields = ("stock", "price", "unit", "date")
+    list_filter = ("stock", "unit")
+
+admin.site.register(Price, PriceAdmin)
