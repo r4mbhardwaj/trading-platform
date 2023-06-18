@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="overflow-x-auto">
+    <table class="table table-xs">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Symbol</th>
+          <th>Price</th>
+          <th>Change</th>
+          <th>Change %</th>
+          <th>Volume</th>
+          <th>Market Cap</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for stock in stock_list %}
+          {% include 'market/components/stock_object.html' %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'components/pagination.html' with pname="page"  page_obj=page_obj %}
+{% endblock body %}

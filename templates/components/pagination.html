@@ -1,0 +1,37 @@
+{% comment %} make this centered {% endcomment %}
+<div class="mx-auto">
+    {% if is_paginated %}
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li>
+                    <span></span>
+                </li>
+            {% endif %}
+            <li class="">
+                <span></span>
+            </li>
+            {% if page_obj.has_next %}
+                <li>
+                    <span></span>
+                </li>
+            {% endif %}
+        </ul>
+        <div class="join">
+            {% if page_obj.has_previous %}
+                <a href="?{{ pname }} ={{ page_obj.previous_page_number }}"
+                   class="join-item btn">Previous</a>
+            {% else %}
+                <button class="join-item btn btn-disabled">Previous</button>
+            {% endif %}
+            <button class="join-item btn">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</button>
+            {% if page_obj.has_next %}
+                <a href="?{{ pname }}={{ page_obj.next_page_number }}"
+                   class="join-item btn">Next</a>
+            {% else %}
+                <button class="join-item btn btn-disabled">Next</button>
+            {% endif %}
+        </div>
+    {% else %}
+        <p>No rows remaining.</p>
+    {% endif %}
+</div>

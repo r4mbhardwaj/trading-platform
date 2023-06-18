@@ -1,0 +1,61 @@
+<h1>{{ stock.name }}</h1>
+<p>Symbol: {{ stock.ticker }}</p>
+<p>Description: {{ stock.description }}</p>
+<h2>Price History</h2>
+<div style="max-width: 600px;">
+    <canvas id="stockChart"></canvas>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+        $(document).ready(function() {
+            var priceData = [
+                {% for price in price_list %}
+                    { date: "{{ price.date }}", price: {{ price.price }} },
+                {% endfor %}
+            ];
+
+            var labels = priceData.map(function(item) {
+                return item.date;
+            });
+
+            var data = priceData.map(function(item) {
+                return item.price;
+            });
+
+            var ctx = document.getElementById('stockChart').getContext('2d');
+            var stockChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Stock Price',
+                        data: data,
+                        backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                                display: true,
+                                text: 'Price'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+</script>

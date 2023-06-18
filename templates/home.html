@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block body %}
+  <div class="hero min-h-screen bg-base-200">
+    <div class="hero-content flex-col lg:flex-row">
+      <img src="https://cdn.dribbble.com/users/13819/screenshots/14163712/media/f969226c966535230b91229c9f453ad2.gif"
+           class="max-w-sm rounded-lg shadow-2xl" />
+      <div>
+        <h1 class="text-5xl font-bold">Stocckk Market Live!</h1>
+        <p class="py-6">All things finance, right here.</p>
+        <a class="btn btn-primary" href="{% url 'market:stock_search' %}">Get Started</a>
+      </div>
+    </div>
+  </div>
+{% endblock body %}

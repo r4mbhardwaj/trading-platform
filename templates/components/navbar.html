@@ -1,0 +1,40 @@
+{% load account socialaccount %}
+<div class="navbar bg-base-100">
+  <div class="flex-1">
+    <a class="btn btn-ghost normal-case text-xl" href="/">Stock Market</a>
+  </div>
+  <div class="flex-none">
+    <div class="dropdown dropdown-end">
+      <label tabindex="0" class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb51ZwKCKqU4ZrB9cfaUNclbeRiC-V-KZsfQ&usqp=CAU" />
+        </div>
+      </label>
+      {% comment %} make it above all in the z axis {% endcomment %}
+      <ul tabindex="0"
+          class="menu menu-sm dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52 z-50">
+        <li>
+          {% if user.is_authenticated %}
+            <a class="justify-between">
+              Account
+              <span class="badge">New</span>
+            </a>
+          </li>
+          <li>
+            <a href="/wishlist">Wishlist</a>
+          </li>
+          <li>
+            <a href="{% url 'account_logout' %}">Logout</a>
+          </li>
+        {% else %}
+          <li>
+            <a href="{% url 'account_login' %}">Login</a>
+          </li>
+          <li>
+            <a href="{% url 'account_signup' %}">Register</a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>

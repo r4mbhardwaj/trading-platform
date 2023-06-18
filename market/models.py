@@ -2,7 +2,7 @@ from django.db import models
 
 class Stock(models.Model):
     name = models.CharField(max_length=100) # Name of the stock
-    ticker = models.CharField(max_length=10) # Ticker is the stock symbol
+    ticker = models.CharField(max_length=10, primary_key=True) # Ticker is the stock symbol
     def __str__(self):
         return f"${self.ticker}"
     
